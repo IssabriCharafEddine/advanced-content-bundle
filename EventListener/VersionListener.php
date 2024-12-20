@@ -2,7 +2,7 @@
 
 namespace Sherlockode\AdvancedContentBundle\EventListener;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs; // Correct type for prePersist
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Sherlockode\AdvancedContentBundle\Model\ContentVersionInterface;
 use Sherlockode\AdvancedContentBundle\Model\PageVersionInterface;
@@ -11,11 +11,13 @@ use Sherlockode\AdvancedContentBundle\Model\VersionInterface;
 class VersionListener
 {
     /**
-     * @param LifecycleEventArgs $args
+     * Handle the prePersist event for Version entities.
+     *
+     * @param PrePersistEventArgs $args
      */
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(PrePersistEventArgs $args)
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
 
         if (!$entity instanceof VersionInterface || !$entity->isAutoSave()) {
             return;
@@ -41,7 +43,7 @@ class VersionListener
                 $count++;
             }
             if ($count >= 10) {
-                // Keep only the last 10 drafts by same user
+                // Keep only the last 10 drafts by the same user
                 $args->getEntityManager()->remove($version);
             }
         }
