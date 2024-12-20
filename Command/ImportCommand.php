@@ -135,18 +135,10 @@ class ImportCommand extends Command
         } catch (\Exception $e) {
             $this->symfonyStyle->error($e->getMessage());
 
-            if (defined(sprintf('%s::FAILURE', get_class($this)))) {
-                return self::FAILURE;
-            }
-
-            return 1; 
+            return Command::FAILURE;
         }
 
-        if (defined(sprintf('%s::SUCCESS', get_class($this)))) {
-            return self::SUCCESS; // Return success code (0)
-        }
-    
-        return 0; // Default success return code
+        return Command::SUCCESS;; // Default success return code
     }
 
     private function addFilesToProcess()
