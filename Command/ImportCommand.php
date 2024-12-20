@@ -16,53 +16,15 @@ class ImportCommand extends Command
 {
     const AVAILABLE_ENTITIES = ['Page', 'Content'];
 
-    /**
-     * @var ConfigurationManager
-     */
     private $configurationManager;
-
-    /**
-     * @var TranslatorInterface
-     */
     private $translator;
-
-    /**
-     * @var string
-     */
     private $rootDir;
-
-    /**
-     * @var SymfonyStyle
-     */
     private $symfonyStyle;
-
-    /**
-     * @var string
-     */
     private $sourceDirectory;
-
-    /**
-     * @var ImportManager
-     */
     private $importManager;
-
-    /**
-     * @var array
-     */
     private $importTypes = [];
-
-    /**
-     * @var string
-     */
     private $filename;
 
-    /**
-     * @param ConfigurationManager $configurationManager
-     * @param TranslatorInterface  $translator
-     * @param ImportManager        $importManager
-     * @param string               $rootDir
-     * @param null|string          $name
-     */
     public function __construct(
         ConfigurationManager $configurationManager,
         TranslatorInterface $translator,
@@ -112,33 +74,30 @@ class ImportCommand extends Command
                 'u',
                 InputOption::VALUE_NONE,
                 'Use this option to force update (similar to init_command.allow_update configuration)'
-            )
-        ;
+            );
     }
 
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->symfonyStyle = new SymfonyStyle($input, $output);
+
         try {
             $this->init($input);
-
             $this->addFilesToProcess();
             $this->importManager->setSymfonyStyle($this->symfonyStyle);
             $this->importManager->processData($this->importTypes);
-
         } catch (\Exception $e) {
             $this->symfonyStyle->error($e->getMessage());
-
             return Command::FAILURE;
         }
 
-        return Command::SUCCESS;; // Default success return code
+        return Command::SUCCESS;
     }
 
     private function addFilesToProcess()
@@ -152,12 +111,12 @@ class ImportCommand extends Command
                 $this->symfonyStyle->warning(
                     $this->translator->trans('init.errors.file_not_found', ['%dir%' => $this->sourceDirectory, '%file%' => $this->filename], 'AdvancedContentBundle')
                 );
-
                 return;
             }
         } else {
             $finder->name(['*.yaml', '*.yml']);
         }
+
         foreach ($finder as $file) {
             try {
                 $this->importManager->addFileToProcess($file);
@@ -167,17 +126,9 @@ class ImportCommand extends Command
         }
     }
 
-    /**
-     * @param InputInterface $input
-     *
-     * @throws \Exception
-     */
     private function init(InputInterface $input)
     {
-        $initDir = $input->getOption('dir');
-        if ($initDir === null) {
-            $initDir = $this->configurationManager->getInitDirectory();
-        }
+        $initDir = $input->getOption('dir') ?? $this->configurationManager->getInitDirectory();
         $initDir = $this->getDirFullPath($initDir);
         $this->sourceDirectory = $initDir;
 
@@ -189,11 +140,7 @@ class ImportCommand extends Command
 
         $targetDir = $this->configurationManager->getImageDirectory();
         if (!file_exists($targetDir) && !mkdir($targetDir, 0755)) {
-            throw new \Exception($this->translator->trans(
-                'init.errors.cannot_create_directory',
-                ['%path%' => $targetDir],
-                'AdvancedContentBundle'
-            ));
+            throw new \Exception($this->translator->trans('init.errors.cannot_create_directory', ['%path%' => $targetDir], 'AdvancedContentBundle'));
         }
 
         $allowUpdate = $this->configurationManager->initCanUpdate();
@@ -211,18 +158,11 @@ class ImportCommand extends Command
                 );
             }
         }
-        $this->importTypes = $importTypes;
 
+        $this->importTypes = $importTypes;
         $this->filename = $input->getOption('file');
     }
 
-    /**
-     * @param string $dir
-     *
-     * @return string
-     *
-     * @throws \Exception
-     */
     private function getDirFullPath($dir)
     {
         if (strpos($dir, '/') !== 0) {
@@ -231,9 +171,7 @@ class ImportCommand extends Command
         $dir .= '/';
 
         if (!file_exists($dir)) {
-            throw new \Exception(
-                $this->translator->trans('init.errors.init_dir', ['%dir%' => $dir], 'AdvancedContentBundle')
-            );
+            throw new \Exception($this->translator->trans('init.errors.init_dir', ['%dir%' => $dir], 'AdvancedContentBundle'));
         }
 
         return $dir;
