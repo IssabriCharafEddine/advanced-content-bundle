@@ -89,5 +89,12 @@
         <service id="Sherlockode\AdvancedContentBundle\Doctrine\MigrationHelperInterface" alias="sherlockode_advanced_content.migrations_helper"/>
         <service id="sherlockode_advanced_content.unique_file_namer" class="Sherlockode\AdvancedContentBundle\Naming\UniqueNamer"/>
         <service id="sherlockode_advanced_content.client_original_file_namer" class="Sherlockode\AdvancedContentBundle\Naming\ClientOriginalNamer"/>
+        <service id="sherlockode_advanced_content.page_listener" class="Sherlockode\AdvancedContentBundle\EventListener\PageListener">
+            <argument type="service" id="sherlockode_advanced_content.configuration_manager"/>
+            <argument type="service" id="sherlockode_advanced_content.version_manager"/>
+            <tag name="doctrine.event_listener" event="postLoad" lazy="1"/>
+            <tag name="doctrine.event_listener" event="onFlush" lazy="1"/>
+            <tag name="doctrine.event_listener" event="prePersist" lazy="1"/>
+        </service>
     </services>
 </container>
