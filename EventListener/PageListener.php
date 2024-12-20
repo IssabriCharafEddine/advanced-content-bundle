@@ -3,7 +3,7 @@
 namespace Sherlockode\AdvancedContentBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs ;
 use Doctrine\ORM\Event\PrePersistEventArgs; // Use this for prePersist
 use Sherlockode\AdvancedContentBundle\Manager\ConfigurationManager;
 use Sherlockode\AdvancedContentBundle\Manager\VersionManager;
@@ -72,7 +72,7 @@ class PageListener
         }
     }
 
-    public function onFlush(PreFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs  $args)
     {
         // Access the EntityManager and UnitOfWork
         $em = $args->getEntityManager();
