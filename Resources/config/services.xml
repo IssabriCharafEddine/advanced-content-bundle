@@ -93,7 +93,7 @@
             <argument type="service" id="sherlockode_advanced_content.configuration_manager"/>
             <argument type="service" id="sherlockode_advanced_content.version_manager"/>
             <tag name="doctrine.event_listener" event="postLoad" lazy="1"/>
-            <tag name="doctrine.event_listener" event="preFlush" lazy="1"/>
+            <tag name="doctrine.event_listener" event="onFlush" lazy="1"/>
             <tag name="doctrine.event_listener" event="prePersist" lazy="1"/>
         </service>
     </services>

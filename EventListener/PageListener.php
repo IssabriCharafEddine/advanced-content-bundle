@@ -72,7 +72,7 @@ class PageListener
         }
     }
 
-    public function preFlush(PreFlushEventArgs $args)
+    public function onFlush(PreFlushEventArgs $args)
     {
         // Access the EntityManager and UnitOfWork
         $em = $args->getEntityManager();
