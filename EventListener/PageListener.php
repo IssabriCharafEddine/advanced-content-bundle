@@ -4,6 +4,7 @@ namespace Sherlockode\AdvancedContentBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs; // Use this for prePersist
 use Sherlockode\AdvancedContentBundle\Manager\ConfigurationManager;
 use Sherlockode\AdvancedContentBundle\Manager\VersionManager;
 use Sherlockode\AdvancedContentBundle\Model\ContentInterface;
@@ -12,29 +13,15 @@ use Sherlockode\AdvancedContentBundle\Model\PageMetaInterface;
 
 class PageListener
 {
-    /**
-     * @var ConfigurationManager
-     */
     private $configurationManager;
-
-    /**
-     * @var VersionManager
-     */
     private $versionManager;
 
-    /**
-     * @param ConfigurationManager $configurationManager
-     * @param VersionManager       $versionManager
-     */
     public function __construct(ConfigurationManager $configurationManager, VersionManager $versionManager)
     {
         $this->configurationManager = $configurationManager;
         $this->versionManager = $versionManager;
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
     public function postLoad(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
@@ -72,10 +59,7 @@ class PageListener
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(PrePersistEventArgs $args) // Update type hint
     {
         $object = $args->getObject();
 
@@ -88,9 +72,6 @@ class PageListener
         }
     }
 
-    /**
-     * @param OnFlushEventArgs $args
-     */
     public function onFlush(OnFlushEventArgs $args)
     {
         $em = $args->getEntityManager();
