@@ -74,7 +74,8 @@ class PageListener
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager();
+        // Access the entity manager correctly
+        $em = $args->getEntityManager();  // This is the correct way to get the EntityManager
         $uow = $em->getUnitOfWork();
 
         $entities = [
@@ -101,6 +102,7 @@ class PageListener
         $pageClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('page'));
         $pageMetaVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('page_meta_version'));
         $contentVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('content_version'));
+
         foreach ($pages as $page) {
             $pageVersion = $this->versionManager->getNewPageVersion($page);
             $em->persist($pageVersion);
