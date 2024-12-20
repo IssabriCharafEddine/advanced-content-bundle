@@ -98,17 +98,16 @@ class ExportCommand extends Command
                 'd',
                 InputOption::VALUE_OPTIONAL,
                 'Directory in which the files will be exported'
-            )
-        ;
+            );
     }
 
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         try {
@@ -133,18 +132,11 @@ class ExportCommand extends Command
             $this->exportManager->generateFiles($this->sourceDirectory);
 
             $this->symfonyStyle->success($this->translator->trans('init.export_success', ['%dir%' => $this->sourceDirectory], 'AdvancedContentBundle'));
+
+            return self::SUCCESS;  // Return the success code
         } catch (\Exception $e) {
             $this->symfonyStyle->error($e->getMessage());
-
-            if (defined(sprintf('%s::FAILURE', get_class($this)))) {
-                return self::FAILURE;
-            }
-
-            return;
-        }
-
-        if (defined(sprintf('%s::SUCCESS', get_class($this)))) {
-            return self::SUCCESS;
+            return self::FAILURE;  // Return the failure code
         }
     }
 
