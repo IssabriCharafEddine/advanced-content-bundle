@@ -3,7 +3,7 @@
 namespace Sherlockode\AdvancedContentBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PrePersistEventArgs; // Use this for prePersist
 use Sherlockode\AdvancedContentBundle\Manager\ConfigurationManager;
 use Sherlockode\AdvancedContentBundle\Manager\VersionManager;
@@ -72,41 +72,41 @@ class PageListener
         }
     }
 
-    public function onFlush(OnFlushEventArgs $args)
+    public function preFlush(PreFlushEventArgs $args)
     {
-        // Access the entity manager correctly
-        $em = $args->getEntityManager();  // This is the correct way to get the EntityManager
+        // Access the EntityManager and UnitOfWork
+        $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
 
-        $entities = [
-            ...$uow->getScheduledEntityInsertions(),
-            ...$uow->getScheduledEntityUpdates()
-        ];
+        // Merge the entities that are being inserted or updated
+        $entities = array_merge(
+            $uow->getScheduledEntityInsertions(),
+            $uow->getScheduledEntityUpdates()
+        );
 
         $pages = [];
         foreach ($entities as $entity) {
             if ($entity instanceof PageInterface) {
                 $pages[$entity->getId()] = $entity;
-                continue;
-            }
-            if ($entity instanceof PageMetaInterface && $entity->getPage() !== null && $entity->getPage()->getId()) {
+            } elseif ($entity instanceof PageMetaInterface && $entity->getPage() !== null && $entity->getPage()->getId()) {
                 $pages[$entity->getPage()->getId()] = $entity->getPage();
-                continue;
-            }
-            if ($entity instanceof ContentInterface && $entity->getPage() !== null && $entity->getPage()->getId()) {
+            } elseif ($entity instanceof ContentInterface && $entity->getPage() !== null && $entity->getPage()->getId()) {
                 $pages[$entity->getPage()->getId()] = $entity->getPage();
             }
         }
 
+        // Get metadata for different entities
         $pageVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('page_version'));
         $pageClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('page'));
         $pageMetaVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('page_meta_version'));
         $contentVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('content_version'));
 
+        // Perform necessary actions on entities
         foreach ($pages as $page) {
             $pageVersion = $this->versionManager->getNewPageVersion($page);
             $em->persist($pageVersion);
             $uow->computeChangeSet($pageVersionClassMetadata, $pageVersion);
+
             if ($contentVersion = $pageVersion->getContentVersion()) {
                 $em->persist($contentVersion);
                 $uow->computeChangeSet($contentVersionClassMetadata, $contentVersion);
@@ -115,6 +115,8 @@ class PageListener
                 $em->persist($pageMetaVersion);
                 $uow->computeChangeSet($pageMetaVersionClassMetadata, $pageMetaVersion);
             }
+
+            // Recompute the entity change set for the page
             $uow->recomputeSingleEntityChangeSet($pageClassMetadata, $page);
         }
     }
