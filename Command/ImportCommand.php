@@ -122,7 +122,7 @@ class ImportCommand extends Command
      *
      * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         try {
@@ -139,12 +139,14 @@ class ImportCommand extends Command
                 return self::FAILURE;
             }
 
-            return;
+            return 1; 
         }
 
         if (defined(sprintf('%s::SUCCESS', get_class($this)))) {
-            return self::SUCCESS;
+            return self::SUCCESS; // Return success code (0)
         }
+    
+        return 0; // Default success return code
     }
 
     private function addFilesToProcess()
