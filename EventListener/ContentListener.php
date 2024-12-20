@@ -52,7 +52,7 @@ class ContentListener
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager(); // Correct method to get the entity manager from OnFlushEventArgs
+        $em = $args->getObjectManager();  // Changed from getEntityManager() to getObjectManager()
         $uow = $em->getUnitOfWork();
 
         $entities = [
