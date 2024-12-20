@@ -10,11 +10,11 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.1",
+        "php": "^8.2",
         "cocur/slugify": "^4.0",
-        "symfony/form": "^4.4 || ^5.0 || ^6.0",
-        "symfony/framework-bundle": "^4.4 || ^5.0 || ^6.0",
-        "symfony/twig-bundle": "^4.4 || ^5.0 || ^6.0",
+        "symfony/form": "^4.4 || ^5.0 || ^6.0 || ^7.1",
+        "symfony/framework-bundle": "^4.4 || ^5.0 || ^6.0 || ^7.1",
+        "symfony/twig-bundle": "^4.4 || ^5.0 || ^6.0 || ^7.1",
         "twig/twig": "^2.0 || ^3.0"
     },
     "suggest": {
@@ -22,6 +22,8 @@
         "sherlockode/sonata-advanced-content-bundle": "Integration with SonataAdminBundle"
     },
     "autoload": {
-        "psr-4": { "Sherlockode\\AdvancedContentBundle\\": "" }
+        "psr-4": {
+            "Sherlockode\\AdvancedContentBundle\\": ""
+        }
     }
 }
