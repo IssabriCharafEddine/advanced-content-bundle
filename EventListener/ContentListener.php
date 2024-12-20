@@ -52,7 +52,7 @@ class ContentListener
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager();
+        $em = $args->getEntityManager(); // Correct method to get the entity manager from OnFlushEventArgs
         $uow = $em->getUnitOfWork();
 
         $entities = [
@@ -62,6 +62,7 @@ class ContentListener
 
         $contentVersionClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('content_version'));
         $contentClassMetadata = $em->getClassMetadata($this->configurationManager->getEntityClass('content'));
+
         foreach ($entities as $entity) {
             if (!$entity instanceof ContentInterface) {
                 continue;
